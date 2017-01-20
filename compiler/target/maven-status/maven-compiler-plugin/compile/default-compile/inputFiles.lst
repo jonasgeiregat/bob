@@ -1,0 +1,15 @@
+/Users/jonas/Google Drive/dev/bob/compiler/src/main/java/be/grgt/jonas/bob/definitions/FieldDefinition.java
+/Users/jonas/Google Drive/dev/bob/compiler/src/main/java/be/grgt/jonas/bob/utils/Formatter.java
+/Users/jonas/Google Drive/dev/bob/compiler/src/main/java/be/grgt/jonas/bob/definitions/GenericParameterDefinition.java
+/Users/jonas/Google Drive/dev/bob/compiler/src/main/java/be/grgt/jonas/bob/generators/BuilderGenerator.java
+/Users/jonas/Google Drive/dev/bob/compiler/src/main/java/be/grgt/jonas/bob/definitions/ConstructorDefinition.java
+/Users/jonas/Google Drive/dev/bob/compiler/src/main/java/be/grgt/jonas/bob/specs/BuildATypeSpecFactory.java
+/Users/jonas/Google Drive/dev/bob/compiler/src/main/java/be/grgt/jonas/bob/Buildable.java
+/Users/jonas/Google Drive/dev/bob/compiler/src/main/java/be/grgt/jonas/bob/processor/BuildableProcessor.java
+/Users/jonas/Google Drive/dev/bob/compiler/src/main/java/be/grgt/jonas/bob/specs/BuilderTypeSpecFactory.java
+/Users/jonas/Google Drive/dev/bob/compiler/src/main/java/be/grgt/jonas/bob/TypeWriter.java
+/Users/jonas/Google Drive/dev/bob/compiler/src/main/java/be/grgt/jonas/bob/factories/BuildableSourceDefinitionFactory.java
+/Users/jonas/Google Drive/dev/bob/compiler/src/main/java/be/grgt/jonas/bob/generators/BobGenerator.java
+/Users/jonas/Google Drive/dev/bob/compiler/src/main/java/be/grgt/jonas/bob/definitions/ParameterDefinition.java
+/Users/jonas/Google Drive/dev/bob/compiler/src/main/java/be/grgt/jonas/bob/definitions/SimpleTypeDefinition.java
+/Users/jonas/Google Drive/dev/bob/compiler/src/main/java/be/grgt/jonas/bob/definitions/TypeDefinition.java
