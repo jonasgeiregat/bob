@@ -162,6 +162,42 @@ public class BuilderTypeSpecFactoryTest {
         assertThat(found).isTrue();
     }
 
+    @Test
+    public void produceTest_excludes_satisfied() {
+        List<FieldDefinition> fields = new ArrayList<>();
+        TypeMirror type = mock(TypeMirror.class);
+        when(type.accept(any(TypeVisitor.class), Matchers.any())).thenReturn(TypeName.get(String.class));
+        fields.add(new FieldDefinition("age", Collections.singleton(Modifier.PUBLIC), type));
+        fields.add(new FieldDefinition("taste", Collections.singleton(Modifier.PRIVATE), type));
+        fields.add(new FieldDefinition("location", Collections.singleton(Modifier.PUBLIC), type));
+
+        List<ConstructorDefinition> constructors = Collections.singletonList(new ConstructorDefinition(Collections.singletonList(new ParameterDefinition("name"))));
+        TypeDefinition source = builderDefinition("com.wine.bar", "Cheese", "Cave.Cellar", fields, constructors);
+        Buildable buildable = newBuildable()
+                .withPrefix("with")
+                .withExcludes("age", "taste")
+                .get();
+        TypeSpec typeSpec = BuilderTypeSpecFactory.produce(source, buildable);
+
+        boolean ageFound = false;
+        boolean locationFound = false;
+        boolean withTaste = false;
+        for(MethodSpec method: typeSpec.methodSpecs) {
+            if(Objects.equals(method.name, "withAge")) {
+                ageFound = true;
+            }
+            if(Objects.equals(method.name, "withLocation")) {
+                locationFound = true;
+            }
+            if(Objects.equals(method.name, "withTaste")) {
+                withTaste = true;
+            }
+        }
+        assertThat(ageFound).isFalse();
+        assertThat(withTaste).isFalse();
+        assertThat(locationFound).isTrue();
+    }
+
     private MethodSpec newInstance(TypeSpec typeSpec) {
         for (MethodSpec spec : typeSpec.methodSpecs)
             if ("newInstance".equals(spec.name))
@@ -196,6 +232,7 @@ public class BuilderTypeSpecFactoryTest {
         private Buildable buildable;
         private String prefix = "";
         private String packageName = "";
+        private List<String> excludes = new ArrayList<>();
 
         BuildableBuilder() {
             buildable = mock(Buildable.class);
@@ -203,6 +240,11 @@ public class BuilderTypeSpecFactoryTest {
 
         BuildableBuilder withPrefix(String prefix) {
             this.prefix = prefix;
+            return this;
+        }
+
+        BuildableBuilder withExcludes(String ... excludes) {
+            this.excludes.addAll(Arrays.asList(excludes));
             return this;
         }
 
@@ -214,6 +256,7 @@ public class BuilderTypeSpecFactoryTest {
         Buildable get() {
             when(buildable.prefix()).thenReturn(prefix);
             when(buildable.packageName()).thenReturn(packageName);
+            when(buildable.excludes()).thenReturn(excludes.toArray(new String[excludes.size()]));
             return buildable;
         }
     }

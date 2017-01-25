@@ -7,6 +7,7 @@ import com.squareup.javapoet.*;
 
 import javax.lang.model.element.Modifier;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import static be.grgt.jonas.bob.utils.Formatter.format;
@@ -123,7 +124,7 @@ public class BuilderTypeSpecFactory {
     private List<MethodSpec> setters() {
         List<MethodSpec> setters = new ArrayList<>();
         for (FieldDefinition field : sourceDef.fields()) {
-            if (!field.isFinal()) {
+            if (!field.isFinal() && notExcluded(field)) {
                 MethodSpec.Builder setter = MethodSpec.methodBuilder(fieldName(field.name()))
                         .addModifiers(Modifier.PUBLIC)
                         .returns(builderType())
@@ -143,6 +144,10 @@ public class BuilderTypeSpecFactory {
             }
         }
         return setters;
+    }
+
+    private boolean notExcluded(FieldDefinition field) {
+        return !Arrays.asList(buildable.excludes()).contains(field.name());
     }
 
     private boolean notWithinTheSamePackage() {
