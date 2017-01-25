@@ -1,8 +1,6 @@
-be/grgt/jonas/bob/processor/BuildableProcessor$Tuple.class
 be/grgt/jonas/bob/factories/BuildableSourceDefinitionFactory.class
 be/grgt/jonas/bob/specs/BuilderTypeSpecFactory.class
 be/grgt/jonas/bob/definitions/ParameterDefinition$Builder.class
-be/grgt/jonas/bob/generators/BobGenerator.class
 be/grgt/jonas/bob/definitions/ParameterDefinition$1.class
 be/grgt/jonas/bob/Buildable.class
 be/grgt/jonas/bob/TypeWriter.class
@@ -15,5 +13,4 @@ be/grgt/jonas/bob/generators/BuilderGenerator.class
 be/grgt/jonas/bob/utils/Formatter.class
 be/grgt/jonas/bob/definitions/ConstructorDefinition.class
 be/grgt/jonas/bob/definitions/GenericParameterDefinition.class
-be/grgt/jonas/bob/specs/BuildATypeSpecFactory.class
 be/grgt/jonas/bob/processor/BuildableProcessor.class

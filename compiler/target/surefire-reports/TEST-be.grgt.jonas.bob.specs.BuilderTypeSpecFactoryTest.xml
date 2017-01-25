@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<testsuite tests="6" failures="0" name="be.grgt.jonas.bob.specs.BuilderTypeSpecFactoryTest" time="0.226" errors="0" skipped="0">
+<testsuite tests="7" failures="0" name="be.grgt.jonas.bob.specs.BuilderTypeSpecFactoryTest" time="0.243" errors="0" skipped="0">
   <properties>
     <property name="java.runtime.name" value="Java(TM) SE Runtime Environment"/>
     <property name="sun.boot.library.path" value="/Library/Java/JavaVirtualMachines/jdk1.8.0_111.jdk/Contents/Home/jre/lib"/>
@@ -7,7 +7,7 @@
     <property name="user.country.format" value="BE"/>
     <property name="gopherProxySet" value="false"/>
     <property name="java.vm.vendor" value="Oracle Corporation"/>
-    <property name="maven.multiModuleProjectDirectory" value="/Users/jonas/Google Drive/dev/bob"/>
+    <property name="maven.multiModuleProjectDirectory" value="/Users/jonas/dev/bob"/>
     <property name="java.vendor.url" value="http://java.oracle.com/"/>
     <property name="path.separator" value=":"/>
     <property name="guice.disable.misplaced.annotation.check" value="true"/>
@@ -17,7 +17,7 @@
     <property name="sun.java.launcher" value="SUN_STANDARD"/>
     <property name="sun.os.patch.level" value="unknown"/>
     <property name="java.vm.specification.name" value="Java Virtual Machine Specification"/>
-    <property name="user.dir" value="/Users/jonas/Google Drive/dev/bob"/>
+    <property name="user.dir" value="/Users/jonas/dev/bob"/>
     <property name="java.runtime.version" value="1.8.0_111-b14"/>
     <property name="java.awt.graphicsenv" value="sun.awt.CGraphicsEnvironment"/>
     <property name="java.endorsed.dirs" value="/Library/Java/JavaVirtualMachines/jdk1.8.0_111.jdk/Contents/Home/jre/lib/endorsed"/>
@@ -63,10 +63,11 @@
     <property name="ftp.nonProxyHosts" value="local|*.local|169.254/16|*.169.254/16"/>
     <property name="sun.cpu.isalist" value=""/>
   </properties>
-  <testcase classname="be.grgt.jonas.bob.specs.BuilderTypeSpecFactoryTest" name="produceTest_normalPackagedBasedClass" time="0.21"/>
-  <testcase classname="be.grgt.jonas.bob.specs.BuilderTypeSpecFactoryTest" name="produceTest_nestedClass" time="0.003"/>
-  <testcase classname="be.grgt.jonas.bob.specs.BuilderTypeSpecFactoryTest" name="produceTest_newInstance_missingDefaultConstructor" time="0.003"/>
-  <testcase classname="be.grgt.jonas.bob.specs.BuilderTypeSpecFactoryTest" name="produceTest_protectedFields_areSetUsingReflectionWhenNotInSamePackage" time="0.005"/>
-  <testcase classname="be.grgt.jonas.bob.specs.BuilderTypeSpecFactoryTest" name="produceTest_protectedFieldsThatAreInTheSamePackage_areSetDirectly" time="0.002"/>
-  <testcase classname="be.grgt.jonas.bob.specs.BuilderTypeSpecFactoryTest" name="produceTest_prefix_appliedCorrectly" time="0.003"/>
+  <testcase classname="be.grgt.jonas.bob.specs.BuilderTypeSpecFactoryTest" name="produceTest_nestedClass" time="0.216"/>
+  <testcase classname="be.grgt.jonas.bob.specs.BuilderTypeSpecFactoryTest" name="produceTest_newInstance_missingDefaultConstructor" time="0.004"/>
+  <testcase classname="be.grgt.jonas.bob.specs.BuilderTypeSpecFactoryTest" name="produceTest_protectedFields_areSetUsingReflectionWhenNotInSamePackage" time="0.009"/>
+  <testcase classname="be.grgt.jonas.bob.specs.BuilderTypeSpecFactoryTest" name="produceTest_protectedFieldsThatAreInTheSamePackage_areSetDirectly" time="0.005"/>
+  <testcase classname="be.grgt.jonas.bob.specs.BuilderTypeSpecFactoryTest" name="produceTest_prefix_appliedCorrectly" time="0.004"/>
+  <testcase classname="be.grgt.jonas.bob.specs.BuilderTypeSpecFactoryTest" name="produceTest_excludes_satisfied" time="0.003"/>
+  <testcase classname="be.grgt.jonas.bob.specs.BuilderTypeSpecFactoryTest" name="produceTest_normalPackagedBasedClass" time="0.002"/>
 </testsuite>
