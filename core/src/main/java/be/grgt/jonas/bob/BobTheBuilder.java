@@ -1,5 +1,7 @@
 package be.grgt.jonas.bob;
 
+import com.google.common.base.Supplier;
+
 import java.lang.reflect.Field;
 
 @SuppressWarnings("unused")
@@ -12,6 +14,7 @@ public abstract class BobTheBuilder<T> implements Builder<T> {
     }
 
     abstract protected T newInstance();
+    abstract public T get();
 
     protected void setField(String name, Object value) {
         try {
@@ -25,10 +28,17 @@ public abstract class BobTheBuilder<T> implements Builder<T> {
         }
     }
 
-    @Override
-    public T get() {
-        T result = instance;
-        instance = newInstance();
-        return result;
+    protected void setField(Object instance, String name, Object value) {
+        try {
+            Field field = instance.getClass().
+                    getDeclaredField(name);
+            field.setAccessible(true);
+            field.set(instance, value);
+            field.setAccessible(false);
+        } catch (NoSuchFieldException | IllegalAccessException e) {
+            throw new RuntimeException(e);
+        }
     }
+
+
 }

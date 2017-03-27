@@ -1,13 +1,16 @@
 /Users/jonas/dev/bob/compiler/src/main/java/be/grgt/jonas/bob/processor/BuildableProcessor.java
+/Users/jonas/dev/bob/compiler/src/main/java/be/grgt/jonas/bob/specs/FieldsInsideBuilderTypeSpecFactory.java
 /Users/jonas/dev/bob/compiler/src/main/java/be/grgt/jonas/bob/Buildable.java
+/Users/jonas/dev/bob/compiler/src/main/java/be/grgt/jonas/bob/specs/TypeSpecFactory.java
 /Users/jonas/dev/bob/compiler/src/main/java/be/grgt/jonas/bob/definitions/GenericParameterDefinition.java
 /Users/jonas/dev/bob/compiler/src/main/java/be/grgt/jonas/bob/definitions/FieldDefinition.java
 /Users/jonas/dev/bob/compiler/src/main/java/be/grgt/jonas/bob/factories/BuildableSourceDefinitionFactory.java
-/Users/jonas/dev/bob/compiler/src/main/java/be/grgt/jonas/bob/specs/BuilderTypeSpecFactory.java
 /Users/jonas/dev/bob/compiler/src/main/java/be/grgt/jonas/bob/definitions/SimpleTypeDefinition.java
 /Users/jonas/dev/bob/compiler/src/main/java/be/grgt/jonas/bob/utils/Formatter.java
 /Users/jonas/dev/bob/compiler/src/main/java/be/grgt/jonas/bob/definitions/ConstructorDefinition.java
+/Users/jonas/dev/bob/compiler/src/main/java/be/grgt/jonas/bob/specs/InstanceInsideBuilderTypeSpecFactory.java
 /Users/jonas/dev/bob/compiler/src/main/java/be/grgt/jonas/bob/TypeWriter.java
 /Users/jonas/dev/bob/compiler/src/main/java/be/grgt/jonas/bob/definitions/TypeDefinition.java
+/Users/jonas/dev/bob/compiler/src/main/java/be/grgt/jonas/bob/specs/BaseTypeSpecFactory.java
 /Users/jonas/dev/bob/compiler/src/main/java/be/grgt/jonas/bob/generators/BuilderGenerator.java
 /Users/jonas/dev/bob/compiler/src/main/java/be/grgt/jonas/bob/definitions/ParameterDefinition.java

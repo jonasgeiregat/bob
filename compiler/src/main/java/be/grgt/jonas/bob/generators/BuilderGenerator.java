@@ -3,7 +3,8 @@ package be.grgt.jonas.bob.generators;
 import be.grgt.jonas.bob.Buildable;
 import be.grgt.jonas.bob.TypeWriter;
 import be.grgt.jonas.bob.definitions.TypeDefinition;
-import be.grgt.jonas.bob.specs.BuilderTypeSpecFactory;
+import be.grgt.jonas.bob.specs.InstanceInsideBuilderTypeSpecFactory;
+import be.grgt.jonas.bob.specs.TypeSpecFactory;
 import com.squareup.javapoet.TypeSpec;
 
 import javax.annotation.processing.Filer;
@@ -17,8 +18,8 @@ public class BuilderGenerator {
     }
 
     public void generate(TypeDefinition source, Buildable buildable) {
-        TypeSpec typeSpec = BuilderTypeSpecFactory.produce(source, buildable);
-        TypeWriter.write(filer, BuilderTypeSpecFactory.builderPackage(source, buildable), typeSpec);
+        TypeSpec typeSpec = TypeSpecFactory.produce(source, buildable);
+        TypeWriter.write(filer, InstanceInsideBuilderTypeSpecFactory.builderPackage(source, buildable), typeSpec);
     }
 
 }

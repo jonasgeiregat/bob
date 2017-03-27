@@ -1,6 +1,11 @@
 package be.grgt.jonas.bob.definitions;
 
 
+import com.annimon.stream.Collector;
+import com.annimon.stream.Collectors;
+import com.annimon.stream.Stream;
+import com.annimon.stream.function.Predicate;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -25,6 +30,12 @@ public class TypeDefinition extends SimpleTypeDefinition {
 
     public List<FieldDefinition> fields() {
         return fields;
+    }
+
+    public List<FieldDefinition> fields(Predicate<FieldDefinition> predicate) {
+        return Stream.of(fields())
+                .filter(predicate)
+                .collect(Collectors.<FieldDefinition>toList());
     }
 
     public String nestedIn() {

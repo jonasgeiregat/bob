@@ -35,4 +35,8 @@ public class FieldDefinition {
     public boolean isFinal() {
         return modifiers.contains(Modifier.FINAL);
     }
+
+    public boolean isPublic() {
+        return modifiers.contains(Modifier.PUBLIC);
+    }
 }

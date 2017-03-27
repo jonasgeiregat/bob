@@ -38,7 +38,7 @@ public class BuilderTypeSpecFactoryTest {
 
         TypeDefinition source = builderDefinition("com.wine.bar", "Cheese", NO_INNER_CLASS, fields, Collections.<ConstructorDefinition>emptyList());
         Buildable buildable = newBuildable().get();
-        TypeSpec typeSpec = BuilderTypeSpecFactory.produce(source, buildable);
+        TypeSpec typeSpec = InstanceInsideBuilderTypeSpecFactory.produce(source, buildable);
 
         assertThat(((ParameterizedTypeName) typeSpec.superclass).typeArguments.get(0).toString())
                 .isEqualTo("com.wine.bar.Cheese");
@@ -55,7 +55,7 @@ public class BuilderTypeSpecFactoryTest {
 
         TypeDefinition source = builderDefinition("com.wine.bar", "Cheese", "Cave.Cellar", fields, Collections.<ConstructorDefinition>emptyList());
         Buildable buildable = newBuildable().get();
-        TypeSpec typeSpec = BuilderTypeSpecFactory.produce(source, buildable);
+        TypeSpec typeSpec = InstanceInsideBuilderTypeSpecFactory.produce(source, buildable);
 
         String expectedClass = "com.wine.bar.Cave.Cellar.Cheese";
         assertThat(((ParameterizedTypeName) typeSpec.superclass).typeArguments.get(0).toString())
@@ -76,7 +76,7 @@ public class BuilderTypeSpecFactoryTest {
         TypeDefinition source = builderDefinition("com.wine.bar", "Cheese", "Cave.Cellar", fields, constructors);
 
         Buildable buildable = newBuildable().get();
-        TypeSpec typeSpec = BuilderTypeSpecFactory.produce(source, buildable);
+        TypeSpec typeSpec = InstanceInsideBuilderTypeSpecFactory.produce(source, buildable);
 
         String expectedClass = "com.wine.bar.Cave.Cellar.Cheese";
         assertThat(((ParameterizedTypeName) typeSpec.superclass).typeArguments.get(0).toString())
@@ -87,10 +87,12 @@ public class BuilderTypeSpecFactoryTest {
                 .isEqualTo(expectedClass);
         assertThat(newInstance(typeSpec).code.toString())
                 .isEqualTo("   " + expectedClass + " instance;try {\n" +
-                        "    \tinstance = " + expectedClass + ".class.newInstance();\n" +
+                        "    \tinstance = (" + expectedClass + ") " + expectedClass + ".class.getConstructors()[0].newInstance((Object[])new java.lang.reflect.Array[]{null});\n" +
                         "    } catch (InstantiationException e) {\n" +
                         "    \tthrow new RuntimeException();\n" +
                         "    } catch (IllegalAccessException e) {\n" +
+                        "    \tthrow new RuntimeException();\n" +
+                        "    } catch (java.lang.reflect.InvocationTargetException e) {\n" +
                         "    \tthrow new RuntimeException();\n" +
                         "    }return instance;\n");
     }
@@ -106,7 +108,7 @@ public class BuilderTypeSpecFactoryTest {
         List<ConstructorDefinition> constructors = Collections.singletonList(new ConstructorDefinition(Collections.singletonList(new ParameterDefinition("name"))));
         TypeDefinition source = builderDefinition("com.wine.bar", "Cheese", "Cave.Cellar", fields, constructors);
         Buildable buildable = newBuildable().get();
-        TypeSpec typeSpec = BuilderTypeSpecFactory.produce(source, buildable);
+        TypeSpec typeSpec = InstanceInsideBuilderTypeSpecFactory.produce(source, buildable);
 
         MethodSpec age = filter(typeSpec.methodSpecs, "age");
         assertThat(age.code.toString()).isEqualTo("setField(\"age\", age);\nreturn this;\n");
@@ -124,7 +126,7 @@ public class BuilderTypeSpecFactoryTest {
         Buildable buildable = newBuildable()
                 .withPackageName("com.wine.bar")
                 .get();
-        TypeSpec typeSpec = BuilderTypeSpecFactory.produce(source, buildable);
+        TypeSpec typeSpec = InstanceInsideBuilderTypeSpecFactory.produce(source, buildable);
 
         MethodSpec age = filter(typeSpec.methodSpecs, "age");
         assertThat(age.code.toString()).isEqualTo("instance.age = age;\nreturn this;\n");
@@ -151,7 +153,7 @@ public class BuilderTypeSpecFactoryTest {
         Buildable buildable = newBuildable()
                 .withPrefix("with")
                 .get();
-        TypeSpec typeSpec = BuilderTypeSpecFactory.produce(source, buildable);
+        TypeSpec typeSpec = InstanceInsideBuilderTypeSpecFactory.produce(source, buildable);
 
         boolean found = false;
         for(MethodSpec method: typeSpec.methodSpecs) {
@@ -177,7 +179,7 @@ public class BuilderTypeSpecFactoryTest {
                 .withPrefix("with")
                 .withExcludes("age", "taste")
                 .get();
-        TypeSpec typeSpec = BuilderTypeSpecFactory.produce(source, buildable);
+        TypeSpec typeSpec = InstanceInsideBuilderTypeSpecFactory.produce(source, buildable);
 
         boolean ageFound = false;
         boolean locationFound = false;
