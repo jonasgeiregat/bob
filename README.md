@@ -24,7 +24,11 @@ The location of the builder can be changed:
     @Buildable(package = "custom.package")
     public class Car {
       ...
-      
+            
+The generated builder can be used now:
+
+    Car redCar = new CarBuilder().color("red").build();
+
 Bob will try to be smart about creating a builder for you. 
 * If there are *standard* Java Bean setters available they will be used. (`setField`) 
 * If you do not have any setters reflection will be used.
