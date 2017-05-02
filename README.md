@@ -4,6 +4,7 @@ Builder generator for Java
 ## Getting Started
 
 Annotate the class you which to build with `@Buildable`
+    
     package foo.bar
 
     @Buildable
