@@ -1,4 +1,4 @@
-# bob
+# Bob
 Builder generator for Java
 
 ## Getting Started
