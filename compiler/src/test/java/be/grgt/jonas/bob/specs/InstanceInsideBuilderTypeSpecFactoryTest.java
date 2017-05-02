@@ -26,7 +26,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 
-public class BuilderTypeSpecFactoryTest {
+public class InstanceInsideBuilderTypeSpecFactoryTest {
 
     private static final String NO_INNER_CLASS = null;
 
@@ -53,7 +53,8 @@ public class BuilderTypeSpecFactoryTest {
         PrimitiveType primitiveType = primitiveType();
         fields.add(new FieldDefinition("count", Sets.newHashSet(Modifier.PRIVATE), primitiveType));
 
-        TypeDefinition source = builderDefinition("com.wine.bar", "Cheese", "Cave.Cellar", fields, Collections.<ConstructorDefinition>emptyList());
+        List<ConstructorDefinition> defaultConstructor = Collections.singletonList(new ConstructorDefinition(Collections.<ParameterDefinition>emptyList(), Collections.singleton(Modifier.PUBLIC)));
+        TypeDefinition source = builderDefinition("com.wine.bar", "Cheese", "Cave.Cellar", fields, defaultConstructor);
         Buildable buildable = newBuildable().get();
         TypeSpec typeSpec = InstanceInsideBuilderTypeSpecFactory.produce(source, buildable);
 
@@ -69,10 +70,10 @@ public class BuilderTypeSpecFactoryTest {
     }
 
     @Test
-    public void produceTest_newInstance_missingDefaultConstructor() {
+    public void produceTest_newInstance_privateDefaultConstructor() {
         List<FieldDefinition> fields = new ArrayList<>();
 
-        List<ConstructorDefinition> constructors = Collections.singletonList(new ConstructorDefinition(Collections.singletonList(new ParameterDefinition("name"))));
+        List<ConstructorDefinition> constructors = Collections.singletonList(new ConstructorDefinition(Collections.<ParameterDefinition>emptyList(), Collections.singleton(Modifier.PRIVATE)));
         TypeDefinition source = builderDefinition("com.wine.bar", "Cheese", "Cave.Cellar", fields, constructors);
 
         Buildable buildable = newBuildable().get();
@@ -87,7 +88,41 @@ public class BuilderTypeSpecFactoryTest {
                 .isEqualTo(expectedClass);
         assertThat(newInstance(typeSpec).code.toString())
                 .isEqualTo("   " + expectedClass + " instance;try {\n" +
-                        "    \tinstance = (" + expectedClass + ") " + expectedClass + ".class.getConstructors()[0].newInstance((Object[])new java.lang.reflect.Array[]{null});\n" +
+                        "    \tjava.lang.reflect.Constructor<com.wine.bar.Cave.Cellar.Cheese> constructor = " +
+                        "com.wine.bar.Cave.Cellar.Cheese.class.getDeclaredConstructor(new Class[0]);\n" +
+                        "    constructor.setAccessible(true);\n" +
+                        "    instance = constructor.newInstance();\n" +
+                        "    } catch (NoSuchMethodException e) {\n" +
+                        "    \tthrow new RuntimeException();\n" +
+                        "    } catch (InstantiationException e) {\n" +
+                        "    \tthrow new RuntimeException();\n" +
+                        "    } catch (IllegalAccessException e) {\n" +
+                        "    \tthrow new RuntimeException();\n" +
+                        "    } catch (java.lang.reflect.InvocationTargetException e) {\n" +
+                        "    \tthrow new RuntimeException();\n" +
+                        "    }return instance;\n");
+    }
+
+    @Test
+    public void produceTest_newInstance_missingDefaultConstructor() {
+        List<FieldDefinition> fields = new ArrayList<>();
+
+        List<ConstructorDefinition> constructors = Collections.singletonList(new ConstructorDefinition(Collections.singletonList(new ParameterDefinition("name")), Collections.singleton(Modifier.PRIVATE)));
+        TypeDefinition source = builderDefinition("com.wine.bar", "Cheese", "Cave.Cellar", fields, constructors);
+
+        Buildable buildable = newBuildable().get();
+        TypeSpec typeSpec = InstanceInsideBuilderTypeSpecFactory.produce(source, buildable);
+
+        String expectedClass = "com.wine.bar.Cave.Cellar.Cheese";
+        assertThat(((ParameterizedTypeName) typeSpec.superclass).typeArguments.get(0).toString())
+                .isEqualTo(expectedClass);
+        assertThat(typeSpec.name)
+                .isEqualTo("CheeseBuilder");
+        assertThat(newInstance(typeSpec).returnType.toString())
+                .isEqualTo(expectedClass);
+        assertThat(newInstance(typeSpec).code.toString())
+                .isEqualTo("   " + expectedClass + " instance;try {\n" +
+                        "    \tinstance = (" + expectedClass + ") " + expectedClass + ".class.getDeclaredConstructors()[0].newInstance((Object[])new java.lang.reflect.Array[]{null});\n" +
                         "    } catch (InstantiationException e) {\n" +
                         "    \tthrow new RuntimeException();\n" +
                         "    } catch (IllegalAccessException e) {\n" +
@@ -105,7 +140,7 @@ public class BuilderTypeSpecFactoryTest {
         when(type.accept(any(TypeVisitor.class), Matchers.any())).thenReturn(TypeName.get(String.class));
         fields.add(new FieldDefinition("age", Collections.singleton(Modifier.PROTECTED), type));
 
-        List<ConstructorDefinition> constructors = Collections.singletonList(new ConstructorDefinition(Collections.singletonList(new ParameterDefinition("name"))));
+        List<ConstructorDefinition> constructors = Collections.singletonList(new ConstructorDefinition(Collections.singletonList(new ParameterDefinition("name")), Collections.<Modifier>emptySet()));
         TypeDefinition source = builderDefinition("com.wine.bar", "Cheese", "Cave.Cellar", fields, constructors);
         Buildable buildable = newBuildable().get();
         TypeSpec typeSpec = InstanceInsideBuilderTypeSpecFactory.produce(source, buildable);
@@ -121,7 +156,7 @@ public class BuilderTypeSpecFactoryTest {
         when(type.accept(any(TypeVisitor.class), Matchers.any())).thenReturn(TypeName.get(String.class));
         fields.add(new FieldDefinition("age", Collections.singleton(Modifier.PROTECTED), type));
 
-        List<ConstructorDefinition> constructors = Collections.singletonList(new ConstructorDefinition(Collections.singletonList(new ParameterDefinition("name"))));
+        List<ConstructorDefinition> constructors = Collections.singletonList(new ConstructorDefinition(Collections.singletonList(new ParameterDefinition("name")), Collections.<Modifier>emptySet()));
         TypeDefinition source = builderDefinition("com.wine.bar", "Cheese", null, fields, constructors);
         Buildable buildable = newBuildable()
                 .withPackageName("com.wine.bar")
@@ -148,7 +183,7 @@ public class BuilderTypeSpecFactoryTest {
         when(type.accept(any(TypeVisitor.class), Matchers.any())).thenReturn(TypeName.get(String.class));
         fields.add(new FieldDefinition("age", Collections.singleton(Modifier.PUBLIC), type));
 
-        List<ConstructorDefinition> constructors = Collections.singletonList(new ConstructorDefinition(Collections.singletonList(new ParameterDefinition("name"))));
+        List<ConstructorDefinition> constructors = Collections.singletonList(new ConstructorDefinition(Collections.singletonList(new ParameterDefinition("name")), Collections.<Modifier>emptySet()));
         TypeDefinition source = builderDefinition("com.wine.bar", "Cheese", "Cave.Cellar", fields, constructors);
         Buildable buildable = newBuildable()
                 .withPrefix("with")
@@ -173,7 +208,7 @@ public class BuilderTypeSpecFactoryTest {
         fields.add(new FieldDefinition("taste", Collections.singleton(Modifier.PRIVATE), type));
         fields.add(new FieldDefinition("location", Collections.singleton(Modifier.PUBLIC), type));
 
-        List<ConstructorDefinition> constructors = Collections.singletonList(new ConstructorDefinition(Collections.singletonList(new ParameterDefinition("name"))));
+        List<ConstructorDefinition> constructors = Collections.singletonList(new ConstructorDefinition(Collections.singletonList(new ParameterDefinition("name")), Collections.<Modifier>emptySet()));
         TypeDefinition source = builderDefinition("com.wine.bar", "Cheese", "Cave.Cellar", fields, constructors);
         Buildable buildable = newBuildable()
                 .withPrefix("with")

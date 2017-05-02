@@ -5,8 +5,6 @@ import be.grgt.jonas.bob.definitions.ConstructorDefinition;
 import be.grgt.jonas.bob.definitions.FieldDefinition;
 import be.grgt.jonas.bob.definitions.ParameterDefinition;
 import be.grgt.jonas.bob.definitions.TypeDefinition;
-import be.grgt.jonas.bob.utils.Formatter;
-import com.annimon.stream.Collector;
 import com.annimon.stream.Collectors;
 import com.annimon.stream.Stream;
 import com.annimon.stream.function.Consumer;
@@ -16,9 +14,7 @@ import com.google.common.base.Optional;
 import com.squareup.javapoet.*;
 
 import javax.lang.model.element.Modifier;
-import java.lang.reflect.Type;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import static be.grgt.jonas.bob.utils.Formatter.format;
@@ -33,19 +29,19 @@ public class FieldsInsideBuilderTypeSpecFactory extends BaseTypeSpecFactory {
     protected MethodSpec newInstance() {
         MethodSpec.Builder newInstance = MethodSpec.methodBuilder("newInstance")
                 .addModifiers(Modifier.PROTECTED)
-                .returns(className(sourceDef));
+                .returns(className(source));
         Optional<ConstructorDefinition> constructor = constructorMatchingFinalFields();
         if (!constructor.isPresent())
             throw new IllegalStateException("Missing constructor for final fields");
         return MethodSpec.methodBuilder("newInstance")
                 .addModifiers(Modifier.PROTECTED)
-                .returns(className(sourceDef))
+                .returns(className(source))
                 .addStatement("return new $L(" + constructorArguments(constructor.get().parameters()) + ")", args())
                 .build();
     }
 
     private Object[] args() {
-        List<String> finalFields = Stream.of(sourceDef.fields(new Predicate<FieldDefinition>() {
+        List<String> finalFields = Stream.of(source.fields(new Predicate<FieldDefinition>() {
             @Override
             public boolean test(FieldDefinition fieldDefinition) {
                 return fieldDefinition.isFinal();
@@ -58,7 +54,7 @@ public class FieldsInsideBuilderTypeSpecFactory extends BaseTypeSpecFactory {
         })
                 .collect(Collectors.<String>toList());
         Object[] args = new Object[finalFields.size() + 1];
-        args[0] = className(sourceDef);
+        args[0] = className(source);
         for (int i = 1; i <= finalFields.size(); i++) {
             args[i] = finalFields.get(i - 1);
         }
@@ -77,13 +73,13 @@ public class FieldsInsideBuilderTypeSpecFactory extends BaseTypeSpecFactory {
     }
 
     private Optional<ConstructorDefinition> constructorMatchingFinalFields() {
-        List<FieldDefinition> finalFields = sourceDef.fields(new Predicate<FieldDefinition>() {
+        List<FieldDefinition> finalFields = source.fields(new Predicate<FieldDefinition>() {
             @Override
             public boolean test(FieldDefinition fieldDefinition) {
                 return fieldDefinition.isFinal();
             }
         });
-        for (ConstructorDefinition constructor : sourceDef.constructors()) {
+        for (ConstructorDefinition constructor : source.constructors()) {
             for (FieldDefinition finalField : finalFields) {
                 if (!constructor.parameters().contains(finalField.name()))
                     break;
@@ -96,7 +92,7 @@ public class FieldsInsideBuilderTypeSpecFactory extends BaseTypeSpecFactory {
     @Override
     protected List<MethodSpec> setters() {
         List<MethodSpec> setters = new ArrayList<>();
-        for (FieldDefinition field : sourceDef.fields()) {
+        for (FieldDefinition field : source.fields()) {
             if (notExcluded(field)) {
                 MethodSpec.Builder setter = MethodSpec.methodBuilder(fieldName(field.name()))
                         .addModifiers(Modifier.PUBLIC)
@@ -116,7 +112,7 @@ public class FieldsInsideBuilderTypeSpecFactory extends BaseTypeSpecFactory {
     @Override
     protected List<FieldSpec> fields() {
         return
-                Stream.of(sourceDef.fields())
+                Stream.of(source.fields())
                         .map(new Function<FieldDefinition, FieldSpec>() {
                             @Override
                             public FieldSpec apply(FieldDefinition field) {
@@ -131,9 +127,9 @@ public class FieldsInsideBuilderTypeSpecFactory extends BaseTypeSpecFactory {
     protected MethodSpec get() {
         final MethodSpec.Builder builder = MethodSpec.methodBuilder("get")
                 .addModifiers(Modifier.PUBLIC)
-                .returns(className(sourceDef))
-                .addStatement(format("$type result = newInstance()", className(sourceDef).toString()));
-        Stream.of(sourceDef.fields())
+                .returns(className(source))
+                .addStatement(format("$type result = newInstance()", className(source).toString()));
+        Stream.of(source.fields())
                 .filter(new Predicate<FieldDefinition>() {
                     @Override
                     public boolean test(FieldDefinition field) {
@@ -154,7 +150,7 @@ public class FieldsInsideBuilderTypeSpecFactory extends BaseTypeSpecFactory {
 
                     }
                 });
-        builder.addStatement("return result", className(sourceDef).toString());
+        builder.addStatement("return result", className(source).toString());
         return builder.build();
     }
 

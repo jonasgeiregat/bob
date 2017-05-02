@@ -12,10 +12,10 @@ import java.util.List;
 @SuppressWarnings("unused")
 public class TypeDefinition extends SimpleTypeDefinition {
 
-    private String parent;
     private List<FieldDefinition> fields = new ArrayList<>();
     private List<ConstructorDefinition> constructors = new ArrayList<>();
     private List<GenericParameterDefinition> genericParameters = new ArrayList<>();
+    private List<MethodDefinition> methods;
 
     private TypeDefinition(String typeName, String packageName, String enclosedIn, List<FieldDefinition> fields, List<ConstructorDefinition> constructors) {
         super(typeName, packageName);
@@ -38,16 +38,22 @@ public class TypeDefinition extends SimpleTypeDefinition {
                 .collect(Collectors.<FieldDefinition>toList());
     }
 
+    public List<MethodDefinition> methods(Predicate<MethodDefinition> predicate) {
+        return Stream.of(methods)
+                .filter(predicate)
+                .toList();
+    }
+
     public String nestedIn() {
         return parent;
     }
 
     public List<GenericParameterDefinition> genericParameters() {
-        return genericParameters;
+        return new ArrayList<>(genericParameters);
     }
 
     public List<ConstructorDefinition> constructors() {
-        return constructors;
+        return new ArrayList<>(constructors);
     }
 
     public String fullTypeName() {
@@ -72,6 +78,11 @@ public class TypeDefinition extends SimpleTypeDefinition {
 
         public Builder packageName(String packageName) {
             instance.packageName = packageName;
+            return this;
+        }
+
+        public Builder methods(List<MethodDefinition> methods) {
+            instance.methods = methods;
             return this;
         }
 

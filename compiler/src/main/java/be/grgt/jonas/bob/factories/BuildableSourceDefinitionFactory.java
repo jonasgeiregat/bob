@@ -1,6 +1,10 @@
 package be.grgt.jonas.bob.factories;
 
 import be.grgt.jonas.bob.definitions.*;
+import com.annimon.stream.Collectors;
+import com.annimon.stream.Stream;
+import com.annimon.stream.function.Function;
+import com.sun.xml.internal.rngom.digested.DDataPattern;
 
 import javax.lang.model.element.*;
 import javax.lang.model.type.TypeMirror;
@@ -26,6 +30,7 @@ public class BuildableSourceDefinitionFactory {
                 .typeName(typeName())
                 .genericParameters(generics(element))
                 .packageName(packageName())
+                .methods(methods())
                 .enclosedIn(outerFullTypeName())
                 .fields(fields())
                 .constructors(constructors(element))
@@ -79,7 +84,7 @@ public class BuildableSourceDefinitionFactory {
             List<ParameterDefinition> constructorParams = new ArrayList<>();
             for(VariableElement param: constructor.getParameters())
                 constructorParams.add(new ParameterDefinition(param.getSimpleName().toString()));
-            definitions.add(new ConstructorDefinition(constructorParams));
+            definitions.add(new ConstructorDefinition(constructorParams, constructor.getModifiers()));
         }
         return definitions;
     }
@@ -111,5 +116,23 @@ public class BuildableSourceDefinitionFactory {
 
     private List<FieldDefinition> fields() {
         return fields(ElementFilter.fieldsIn(element.getEnclosedElements()));
+    }
+
+    private List<MethodDefinition> methods() {
+        return Stream.of(ElementFilter.methodsIn(element.getEnclosedElements()))
+            .map(new Function<ExecutableElement, MethodDefinition>() {
+                @Override
+                public MethodDefinition apply(ExecutableElement executableElement) {
+                    Stream.of(executableElement.getParameters())
+                            .map(new Function<VariableElement, ParameterDefinition>() {
+                                @Override
+                                public ParameterDefinition apply(VariableElement p) {
+                                    return new ParameterDefinition(p.getSimpleName().toString());
+                                }
+                            })
+                            .toList();
+                    return new MethodDefinition(executableElement.getSimpleName().toString());
+                }
+            }).toList();
     }
 }

@@ -3,14 +3,14 @@ package be.grgt.jonas.bob.specs;
 import be.grgt.jonas.bob.Buildable;
 import be.grgt.jonas.bob.definitions.ConstructorDefinition;
 import be.grgt.jonas.bob.definitions.FieldDefinition;
+import be.grgt.jonas.bob.definitions.MethodDefinition;
 import be.grgt.jonas.bob.definitions.TypeDefinition;
+import com.annimon.stream.function.Predicate;
+import com.google.common.base.Optional;
 import com.squareup.javapoet.*;
 
 import javax.lang.model.element.Modifier;
-import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -33,27 +33,50 @@ public class InstanceInsideBuilderTypeSpecFactory extends BaseTypeSpecFactory {
     @Override
     protected List<MethodSpec> setters() {
         List<MethodSpec> setters = new ArrayList<>();
-        for (FieldDefinition field : sourceDef.fields()) {
+        for (FieldDefinition field : source.fields()) {
             if (!field.isFinal() && notExcluded(field)) {
-                MethodSpec.Builder setter = MethodSpec.methodBuilder(fieldName(field.name()))
+                MethodSpec.Builder builder = MethodSpec.methodBuilder(fieldName(field.name()))
                         .addModifiers(Modifier.PUBLIC)
                         .returns(builderType())
                         .addParameter(TypeName.get(field.type()), field.name());
-                if (field.isPrivate() || field.isProtected() && notWithinTheSamePackage()) {
-                    setter
+                Optional<MethodDefinition> setter = setter(field);
+                if (setter.isPresent()) {
+                    builder
+                            .addStatement("instance." + setter.get().name() + "($L)", field.name());
+                } else if (field.isPrivate() || field.isProtected() && notWithinTheSamePackage()) {
+                    builder
                             .addStatement("setField($S, $L)", field.name(), field.name())
                             .build();
                 } else {
-                    setter
+                    builder
                             .addStatement("instance.$L = $L", field.name(), field.name())
                             .build();
                 }
-                setters.add(setter
+                setters.add(builder
                         .addStatement("return this")
                         .build());
             }
         }
         return setters;
+    }
+
+    private Optional<MethodDefinition> setter(FieldDefinition field) {
+        List<MethodDefinition> methods = source.methods(setterForField(field));
+        if(methods.isEmpty()) return Optional.absent();
+        return Optional.of(methods.get(0));
+    }
+
+    private Predicate<MethodDefinition> setterForField(final FieldDefinition field) {
+        return new Predicate<MethodDefinition>() {
+            @Override
+            public boolean test(MethodDefinition methodDefinition) {
+                String defaultSetter = format("set$name",
+                        field.name().substring(0, 1).toUpperCase() + field.name().substring(1));
+                if(defaultSetter.equals(methodDefinition.name()))
+                    return true;
+                return false;
+            }
+        };
     }
 
     @Override
@@ -65,10 +88,10 @@ public class InstanceInsideBuilderTypeSpecFactory extends BaseTypeSpecFactory {
     protected MethodSpec get() {
         return MethodSpec.methodBuilder("get")
                 .addModifiers(Modifier.PUBLIC)
-                .returns(className(sourceDef))
+                .returns(className(source))
                 .addStatement(format("$type result = instance;\n" +
                         "instance = newInstance();\n" +
-                        "return result", className(sourceDef).toString()))
+                        "return result", className(source).toString()))
                 .build();
     }
 
@@ -76,29 +99,38 @@ public class InstanceInsideBuilderTypeSpecFactory extends BaseTypeSpecFactory {
     protected MethodSpec newInstance() {
         MethodSpec.Builder newInstance = MethodSpec.methodBuilder("newInstance")
                 .addModifiers(Modifier.PROTECTED)
-                .returns(className(sourceDef));
-        if (defaultConstructorPresent())
-            newInstance.addStatement("return new $L()", className(sourceDef));
-        else
+                .returns(className(source));
+        Optional<ConstructorDefinition> defaultConstructor = defaultConstructor();
+        String instantiationCode;;
+        if (defaultConstructor.isPresent() && !defaultConstructor.get().isPrivate())
+            newInstance.addStatement("return new $L()", className(source));
+        else {
+            if(defaultConstructor.isPresent() && defaultConstructor.get().isPrivate()) {
+                instantiationCode = "\tjava.lang.reflect.Constructor<$L> constructor = $L.class.getDeclaredConstructor(new Class[0]);\n"  +
+                        "constructor.setAccessible(true);\n" +
+                        "instance = constructor.newInstance();\n" +
+                "} catch (NoSuchMethodException e) {\n" +
+                        "\tthrow new RuntimeException();\n";
+            } else {
+                instantiationCode = "\tinstance = ($L) $L.class.getDeclaredConstructors()[0].newInstance((Object[])new java.lang.reflect.Array[]{null});\n";
+            }
             newInstance.addStatement("   $L instance;try {\n" +
-                    "\tinstance = ($L) $L.class.getConstructors()[0].newInstance((Object[])new java.lang.reflect.Array[]{null});\n" +
+                    instantiationCode +
                     "} catch (InstantiationException e) {\n" +
                     "\tthrow new RuntimeException();\n" +
                     "} catch (IllegalAccessException e) {\n" +
                     "\tthrow new RuntimeException();\n" +
                     "} catch (java.lang.reflect.InvocationTargetException e) {\n" +
                     "\tthrow new RuntimeException();\n" +
-                    "}return instance", className(sourceDef), className(sourceDef), classNameWithoutGenerics(sourceDef));
+                    "}return instance", className(source), className(source), classNameWithoutGenerics(source));
+        }
         return newInstance.build();
     }
 
-    private boolean defaultConstructorPresent() {
-        if (sourceDef.constructors().isEmpty())
-            return true;
-        else
-            for (ConstructorDefinition constructor : sourceDef.constructors())
-                if (constructor.parameters().isEmpty())
-                    return true;
-        return false;
+    private Optional<ConstructorDefinition> defaultConstructor() {
+        for (ConstructorDefinition constructor : source.constructors())
+            if (constructor.parameters().isEmpty())
+                return Optional.of(constructor);
+        return Optional.absent();
     }
 }

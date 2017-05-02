@@ -14,11 +14,11 @@ import static be.grgt.jonas.bob.utils.Formatter.format;
 
 abstract class BaseTypeSpecFactory {
 
-    protected TypeDefinition sourceDef;
+    protected TypeDefinition source;
     protected Buildable buildable;
 
     protected BaseTypeSpecFactory(TypeDefinition source, Buildable buildable) {
-        this.sourceDef = source;
+        this.source = source;
         this.buildable = buildable;
     }
 
@@ -27,17 +27,17 @@ abstract class BaseTypeSpecFactory {
     }
 
     protected TypeSpec typeSpec() {
-        TypeSpec.Builder builder = TypeSpec.classBuilder(builderTypeName(sourceDef))
-                .superclass(ParameterizedTypeName.get(ClassName.get(BobTheBuilder.class), className(sourceDef)))
+        TypeSpec.Builder builder = TypeSpec.classBuilder(builderTypeName(source))
+                .superclass(ParameterizedTypeName.get(ClassName.get(BobTheBuilder.class), className(source)))
                 .addModifiers(Modifier.PUBLIC, Modifier.FINAL);
-        if (!sourceDef.genericParameters().isEmpty())
-            builder.addTypeVariables(toTypeVariableNames(sourceDef));
+        if (!source.genericParameters().isEmpty())
+            builder.addTypeVariables(toTypeVariableNames(source));
         builder.addMethod(newInstance());
         builder.addMethods(setters());
         builder.addFields(fields());
         builder.addMethod(get());
         builder.addMethod(constructor());
-        if (!sourceDef.genericParameters().isEmpty())
+        if (!source.genericParameters().isEmpty())
             builder.addMethod(of());
         return builder.build();
     }
@@ -45,22 +45,22 @@ abstract class BaseTypeSpecFactory {
 
     private MethodSpec of() {
         CodeBlock.Builder body = CodeBlock.builder();
-        body.addStatement("return new $L<>()", builderTypeName(sourceDef));
+        body.addStatement("return new $L<>()", builderTypeName(source));
         MethodSpec.Builder of = MethodSpec.methodBuilder("of")
                 .addModifiers(Modifier.PUBLIC, Modifier.STATIC)
                 .addTypeVariables(builderTypeGenerics())
                 .returns(builderType());
-        for (ParameterDefinition parameter : sourceDef.genericParameters())
+        for (ParameterDefinition parameter : source.genericParameters())
             of.addParameter(ParameterizedTypeName.get(ClassName.get("java.lang", "Class"), TypeVariableName.get(parameter.name())), String.format("%stype", parameter.name()));
         of.addCode(body.build());
         return of.build();
     }
 
     protected TypeName builderType() {
-        if (sourceDef.genericParameters().isEmpty())
-            return ClassName.get(builderPackage(sourceDef, buildable), builderTypeName(sourceDef));
-        List<TypeVariableName> typeVariableNames = toTypeVariableNames(sourceDef);
-        return ParameterizedTypeName.get(ClassName.get(builderPackage(sourceDef, buildable), builderTypeName(sourceDef)), typeVariableNames.toArray(new TypeName[typeVariableNames.size()]));
+        if (source.genericParameters().isEmpty())
+            return ClassName.get(builderPackage(source, buildable), builderTypeName(source));
+        List<TypeVariableName> typeVariableNames = toTypeVariableNames(source);
+        return ParameterizedTypeName.get(ClassName.get(builderPackage(source, buildable), builderTypeName(source)), typeVariableNames.toArray(new TypeName[typeVariableNames.size()]));
     }
 
     public static String builderPackage(TypeDefinition source, Buildable buildable) {
@@ -73,7 +73,7 @@ abstract class BaseTypeSpecFactory {
 
     private List<TypeVariableName> builderTypeGenerics() {
         List<TypeVariableName> typeVariableNames = new ArrayList<>();
-        for (GenericParameterDefinition param : sourceDef.genericParameters()) {
+        for (GenericParameterDefinition param : source.genericParameters()) {
             List<TypeVariableName> bounds = new ArrayList<>();
             for (SimpleTypeDefinition definition : param.bounds()) {
                 bounds.add(TypeVariableName.get(definition.typeName()));
@@ -116,10 +116,10 @@ abstract class BaseTypeSpecFactory {
     }
 
     private boolean defaultConstructorPresent() {
-        if (sourceDef.constructors().isEmpty())
+        if (source.constructors().isEmpty())
             return true;
         else
-            for (ConstructorDefinition constructor : sourceDef.constructors())
+            for (ConstructorDefinition constructor : source.constructors())
                 if (constructor.parameters().isEmpty())
                     return true;
         return false;
@@ -136,7 +136,7 @@ abstract class BaseTypeSpecFactory {
     }
 
     protected boolean notWithinTheSamePackage() {
-        return !sourceDef.packageName().equals(buildable.packageName());
+        return !source.packageName().equals(buildable.packageName());
     }
 
     protected MethodSpec constructor() {
