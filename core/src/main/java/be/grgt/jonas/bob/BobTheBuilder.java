@@ -14,7 +14,7 @@ public abstract class BobTheBuilder<T> implements Builder<T> {
     }
 
     abstract protected T newInstance();
-    abstract public T get();
+    abstract public T build();
 
     protected void setField(String name, Object value) {
         try {

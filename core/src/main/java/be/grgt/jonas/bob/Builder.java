@@ -5,6 +5,6 @@ import com.google.common.base.Supplier;
 @SuppressWarnings("unused")
 public interface Builder<T> {
 
-    T get();
+    T build();
 
 }

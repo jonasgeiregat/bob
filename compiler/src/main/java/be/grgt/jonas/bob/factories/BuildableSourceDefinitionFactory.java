@@ -1,10 +1,8 @@
 package be.grgt.jonas.bob.factories;
 
 import be.grgt.jonas.bob.definitions.*;
-import com.annimon.stream.Collectors;
 import com.annimon.stream.Stream;
 import com.annimon.stream.function.Function;
-import com.sun.xml.internal.rngom.digested.DDataPattern;
 
 import javax.lang.model.element.*;
 import javax.lang.model.type.TypeMirror;

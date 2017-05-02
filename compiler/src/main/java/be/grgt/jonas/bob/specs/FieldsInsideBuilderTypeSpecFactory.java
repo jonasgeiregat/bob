@@ -124,8 +124,8 @@ public class FieldsInsideBuilderTypeSpecFactory extends BaseTypeSpecFactory {
     }
 
     @Override
-    protected MethodSpec get() {
-        final MethodSpec.Builder builder = MethodSpec.methodBuilder("get")
+    protected MethodSpec build() {
+        final MethodSpec.Builder builder = MethodSpec.methodBuilder("build")
                 .addModifiers(Modifier.PUBLIC)
                 .returns(className(source))
                 .addStatement(format("$type result = newInstance()", className(source).toString()));

@@ -35,7 +35,7 @@ abstract class BaseTypeSpecFactory {
         builder.addMethod(newInstance());
         builder.addMethods(setters());
         builder.addFields(fields());
-        builder.addMethod(get());
+        builder.addMethod(build());
         builder.addMethod(constructor());
         if (!source.genericParameters().isEmpty())
             builder.addMethod(of());
@@ -149,5 +149,5 @@ abstract class BaseTypeSpecFactory {
     protected abstract MethodSpec newInstance();
     protected abstract List<MethodSpec> setters();
     protected abstract List<FieldSpec> fields();
-    protected abstract MethodSpec get();
+    protected abstract MethodSpec build();
 }

@@ -85,8 +85,8 @@ public class InstanceInsideBuilderTypeSpecFactory extends BaseTypeSpecFactory {
     }
 
     @Override
-    protected MethodSpec get() {
-        return MethodSpec.methodBuilder("get")
+    protected MethodSpec build() {
+        return MethodSpec.methodBuilder("build")
                 .addModifiers(Modifier.PUBLIC)
                 .returns(className(source))
                 .addStatement(format("$type result = instance;\n" +
