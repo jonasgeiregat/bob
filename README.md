@@ -46,3 +46,14 @@ If you want to change the prefix of those setter methods you can:
     @Buildable(prefix = "with")
     public class Car {
       ...      
+      
+Bob can handle generics
+
+    @Buildable
+    public class Cup<T, R extends String> {
+        private T contents;
+        private R topping;
+        
+    // usage
+    
+    Cup<BigDecimal, String> string = new CupBuilder<BigDecimal, String>().topping("String").contents(BigDecimal.ZERO).build();
