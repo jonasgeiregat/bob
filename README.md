@@ -47,7 +47,7 @@ If you want to change the prefix of those setter methods you can:
     public class Car {
       ...      
       
-Bob can handle generics
+Bob is not afraid of generics
 
     @Buildable
     public class Cup<T, R extends String> {
@@ -57,3 +57,12 @@ Bob can handle generics
     // usage
     
     Cup<BigDecimal, String> string = new CupBuilder<BigDecimal, String>().topping("String").contents(BigDecimal.ZERO).build();
+    
+Bob can handle final fields    
+
+    @Buildable
+    public class Car {
+        private final String color; 
+        
+        public Car(String color) {
+            ....
