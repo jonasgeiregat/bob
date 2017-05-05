@@ -27,9 +27,6 @@ public class FieldsInsideBuilderTypeSpecFactory extends BaseTypeSpecFactory {
 
     @Override
     protected MethodSpec newInstance() {
-        MethodSpec.Builder newInstance = MethodSpec.methodBuilder("newInstance")
-                .addModifiers(Modifier.PROTECTED)
-                .returns(className(source));
         Optional<ConstructorDefinition> constructor = constructorMatchingFinalFields();
         if (!constructor.isPresent())
             throw new IllegalStateException("Missing constructor for final fields");
@@ -52,7 +49,7 @@ public class FieldsInsideBuilderTypeSpecFactory extends BaseTypeSpecFactory {
                 return fieldDefinition.name();
             }
         })
-                .collect(Collectors.<String>toList());
+        .collect(Collectors.<String>toList());
         Object[] args = new Object[finalFields.size() + 1];
         args[0] = className(source);
         for (int i = 1; i <= finalFields.size(); i++) {
