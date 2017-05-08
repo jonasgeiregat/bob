@@ -1,4 +1,5 @@
 com/github/jonasgeiregat/bob/generators/BuilderGenerator.class
+com/github/jonasgeiregat/bob/specs/FieldsInsideBuilderTypeSpecFactory$8.class
 com/github/jonasgeiregat/bob/definitions/TypeDefinition$Builder.class
 com/github/jonasgeiregat/bob/specs/InstanceInsideBuilderTypeSpecFactory$1.class
 com/github/jonasgeiregat/bob/definitions/ParameterDefinition.class

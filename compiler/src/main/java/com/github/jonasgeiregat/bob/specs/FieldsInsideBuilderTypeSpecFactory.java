@@ -33,12 +33,30 @@ public class FieldsInsideBuilderTypeSpecFactory extends BaseTypeSpecFactory {
         return MethodSpec.methodBuilder("newInstance")
                 .addModifiers(Modifier.PROTECTED)
                 .returns(className(source))
-                .addStatement("return new $L(" + constructorArguments(constructor.get().parameters()) + ")", args())
+                .addStatement("return new $L(" + constructorArguments(constructor.get().parameters()) + ")", args(constructor.get().parameters()))
                 .build();
     }
 
-    private Object[] args() {
-        List<String> finalFields = Stream.of(source.fields(new Predicate<FieldDefinition>() {
+    private Object[] args(List<ParameterDefinition> constructorParams) {
+        final List<String> finalFields = finalFields();
+        List<String> parameters = Stream.of(constructorParams)
+                .map(new Function<ParameterDefinition, String>() {
+                    @Override
+                    public String apply(ParameterDefinition p) {
+                        return finalFields.contains(p.name()) ? p.name() : "null";
+                    }
+                })
+                .toList();
+        Object[] args = new Object[constructorParams.size() + 1];
+        args[0] = className(source);
+        for (int i = 1; i <= parameters.size(); i++) {
+            args[i] = parameters.get(i - 1);
+        }
+        return args;
+    }
+
+    private List<String> finalFields() {
+        return Stream.of(source.fields(new Predicate<FieldDefinition>() {
             @Override
             public boolean test(FieldDefinition fieldDefinition) {
                 return fieldDefinition.isFinal();
@@ -49,13 +67,7 @@ public class FieldsInsideBuilderTypeSpecFactory extends BaseTypeSpecFactory {
                 return fieldDefinition.name();
             }
         })
-        .collect(Collectors.<String>toList());
-        Object[] args = new Object[finalFields.size() + 1];
-        args[0] = className(source);
-        for (int i = 1; i <= finalFields.size(); i++) {
-            args[i] = finalFields.get(i - 1);
-        }
-        return args;
+                .collect(Collectors.<String>toList());
     }
 
     private String constructorArguments(List<ParameterDefinition> params) {
@@ -136,11 +148,11 @@ public class FieldsInsideBuilderTypeSpecFactory extends BaseTypeSpecFactory {
                 .forEach(new Consumer<FieldDefinition>() {
                     @Override
                     public void accept(FieldDefinition field) {
-                        if(field.isPublic())
+                        if (field.isPublic())
                             builder.addStatement(format("result.$fieldName = $fieldName", field.name(), field.name()));
-                        else if(field.isPrivate())
+                        else if (field.isPrivate())
                             builder.addStatement(format("setField(result, \"$fieldName\",  $fieldName)", field.name(), field.name()));
-                        else if(field.isProtected() && notWithinTheSamePackage())
+                        else if (field.isProtected() && notWithinTheSamePackage())
                             builder.addStatement(format("setField(result, \"$fieldName\",  $fieldName)", field.name(), field.name()));
                         else
                             builder.addStatement(format("result.$fieldName = $fieldName", field.name(), field.name()));

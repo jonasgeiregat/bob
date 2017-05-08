@@ -16,7 +16,7 @@ import javax.lang.model.element.TypeElement;
 import javax.lang.model.util.Elements;
 import java.util.Set;
 
-@SupportedAnnotationTypes("Buildable")
+@SupportedAnnotationTypes("com.github.jonasgeiregat.bob.Buildable")
 @SupportedSourceVersion(SourceVersion.RELEASE_6)
 public final class BuildableProcessor extends AbstractProcessor {
 
