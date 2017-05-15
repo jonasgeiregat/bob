@@ -167,6 +167,7 @@ public class InstanceInsideBuilderTypeSpecFactoryTest {
         assertThat(age.code.toString()).isEqualTo("instance.age = age;\nreturn this;\n");
     }
 
+    @SuppressWarnings("all")
     private MethodSpec filter(List<MethodSpec> specs, String name) {
         Objects.requireNonNull(name);
         for(com.squareup.javapoet.MethodSpec spec: specs)
@@ -242,6 +243,7 @@ public class InstanceInsideBuilderTypeSpecFactoryTest {
         throw new IllegalStateException("Method newInstance not found");
     }
 
+    @SuppressWarnings("all")
     private TypeDefinition builderDefinition(String packageName, String typeName, String enclosedIn, List<FieldDefinition> fields, List<ConstructorDefinition> constructors) {
         TypeDefinition definition = mock(TypeDefinition.class);
         when(definition.typeName()).thenReturn(typeName);
@@ -275,6 +277,7 @@ public class InstanceInsideBuilderTypeSpecFactoryTest {
             buildable = mock(Buildable.class);
         }
 
+        @SuppressWarnings("all")
         BuildableBuilder withPrefix(String prefix) {
             this.prefix = prefix;
             return this;
@@ -285,6 +288,7 @@ public class InstanceInsideBuilderTypeSpecFactoryTest {
             return this;
         }
 
+        @SuppressWarnings("all")
         BuildableBuilder withPackageName(String name) {
             this.packageName = name;
             return this;

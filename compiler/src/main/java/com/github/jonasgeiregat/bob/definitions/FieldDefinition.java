@@ -39,4 +39,8 @@ public class FieldDefinition {
     public boolean isPublic() {
         return modifiers.contains(Modifier.PUBLIC);
     }
+
+    public boolean isPackageLocal() {
+        return modifiers.isEmpty();
+    }
 }

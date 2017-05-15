@@ -46,6 +46,15 @@ public class InstanceInsideBuilderTypeSpecFactory extends BaseTypeSpecFactory {
                     builder
                             .addStatement("setField($S, $L)", field.name(), field.name())
                             .build();
+                } else if (field.isPackageLocal()) {
+                    if(!notWithinTheSamePackage())
+                        builder
+                                .addStatement("instance.$L = $L", field.name(), field.name())
+                                .build();
+                    else
+                        builder
+                                .addStatement("setField($S, $L)", field.name(), field.name())
+                                .build();
                 } else {
                     builder
                             .addStatement("instance.$L = $L", field.name(), field.name())
