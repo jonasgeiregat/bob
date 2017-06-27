@@ -22,7 +22,7 @@
 
     <artifactId>bob</artifactId>
     <packaging>pom</packaging>
-    <version>0.1.0</version>
+    <version>0.1.1-SNAPSHOT</version>
     <modules>
         <module>core</module>
         <module>compiler</module>
@@ -37,7 +37,7 @@
     <scm>
         <url>https://github.com/jonasgeiregat/bob</url>
         <connection>scm:git:https://github.com/jonasgeiregat/bob</connection>
-        <tag>bob-0.1.0</tag>
+        <tag>HEAD</tag>
     </scm>
 
     <dependencies>
