@@ -5,7 +5,7 @@
     <groupId>com.github.jonasgeiregat</groupId>
     <artifactId>bob</artifactId>
     <packaging>pom</packaging>
-    <version>0.1.0-SNAPSHOT</version>
+    <version>0.1.0</version>
     <modules>
         <module>core</module>
         <module>compiler</module>
@@ -20,7 +20,7 @@
     <scm>
         <url>https://github.com/jonasgeiregat/bob</url>
         <connection>scm:git:https://github.com/jonasgeiregat/bob</connection>
-      <tag>HEAD</tag>
+      <tag>bob-0.1.0</tag>
   </scm>
 
     <dependencies>
